@@ -17,8 +17,9 @@ def upload_photo(photo_path=None, username=None):
 
 
 def add_user(user_name):
-    url = f"http://127.0.0.1:5000/add_user?user_id={user_name}"
-    r = requests.get(url)
+    data = {"username": "archronac", "first": "Jay", "last": "Yu", "gender": "M", "dob": "1999-12-31"}
+    url = "http://127.0.0.1:5000/add_user"
+    r = requests.post(url, data=data)
     print(r.json())
 
 

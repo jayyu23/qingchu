@@ -7,22 +7,23 @@ class DatabaseHandler:
         self.db_path = ""
 
     def create_user_database(self, db_dir, username):
-        create_user_table = """CREATE TABLE "USERINFO" (
+        create_user_table = """CREATE TABLE IF NOT EXISTS "USERINFO" (
             "Username"	TEXT NOT NULL,
             "Firstname"	TEXT NOT NULL,
             "Lastname"	TEXT NOT NULL,
             "Gender"	TEXT NOT NULL,
-            "DOB"	NUMERIC,
-            PRIMARY KEY("ID")
+            "DOB"	    TEXT,
+            PRIMARY KEY("Username")
         );"""
-        create_clothes_table = """CREATE TABLE "CLOTHES" (
+        create_clothes_table = """CREATE TABLE IF NOT EXISTS "CLOTHES"  (
             "ID"	INTEGER NOT NULL UNIQUE,
             "ClothesType"	TEXT NOT NULL,
             "URL"	TEXT NOT NULL,
             "Remarks"	TEXT,
             PRIMARY KEY("ID" AUTOINCREMENT)
         );"""
-        self.db_path = os.path.join(db_dir, username)
+        self.db_path = os.path.join(db_dir, f"{username}.db")
+        print(self.db_path)
         connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()
         cursor.execute(create_user_table)
@@ -35,6 +36,6 @@ class DatabaseHandler:
         cursor.execute(f"""UPDATE USERINFO SET Username = '{username}',
                                                Firstname = '{first}',
                                                Lastname = '{last}',
-                                               Gender = '{gender}'
+                                               Gender = '{gender}',
                                                DOB = '{dob}'""")
 

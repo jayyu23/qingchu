@@ -1,12 +1,15 @@
 from flask import Flask, request, url_for
-import sqlite3
+from database_handler import DatabaseHandler
 import os
-
-app = Flask(__name__)
 
 """
 Flask Server Code
 """
+
+app = Flask(__name__)
+
+# Maps each username with its corresponding db_handler obj
+username_db_map = {}
 
 @app.route('/')
 def run_app():
@@ -16,24 +19,26 @@ def run_app():
 
 @app.route('/add_user', methods=["POST"])
 def add_user():
-    # http://127.0.0.1:5000/add_user?user_id=123456
-    ret_dict = {'user_id': None, 'success': None}
+    ret_dict = {'username': None, 'success': None}
     if request.method == "POST":
-        pass
-    data = request.args
-    if 'user_id' in data:
-        user_id = data['user_id']
-        ret_dict['user_id'] = user_id
+        # Create the databases
+        data = request.form
+        username, first, last = data["username"], data["first"], data["last"]
+        gender, dob = data["gender"], data["dob"]
+        user_db_handler = DatabaseHandler()
+        user_db_handler.create_user_database("database", username)
+        user_db_handler.update_user_info(username, first, last, gender, dob)
+        username_db_map[username] = user_db_handler
+        # Make the dir to store the images
         if 'users' not in os.listdir('static'):
             os.mkdir(os.path.join('static', 'users'))
         try:
             # Make dir for the user
-            os.mkdir(os.path.join('static', 'users', user_id))
+            os.mkdir(os.path.join('static', 'users', username))
             ret_dict['success'] = True
         except FileExistsError:
             ret_dict['success'] = False
     return ret_dict
-
 
 @app.route('/upload_photo', methods=["POST"])
 def upload_photo():
