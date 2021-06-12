@@ -1,6 +1,6 @@
-from flask import Flask, request, url_for
+from flask import Flask, request
 from database_handler import DatabaseHandler
-import os
+import os, random
 
 """
 Flask Server Code
@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 # Maps each username with its corresponding db_handler obj
 username_db_map = {}
+
 
 @app.route('/')
 def run_app():
@@ -30,16 +31,14 @@ def add_user():
         username, first, last = data["username"], data["first"], data["last"]
         gender, dob = data["gender"], data["dob"]
         ret_dict['username'] = username
-        user_db_handler = DatabaseHandler()
-        user_db_handler.create_user_database("database", username)
-        user_db_handler.add_user_info(username, first, last, gender, dob)
-        username_db_map[username] = user_db_handler
-        # Make the dir to store the images
-        if 'users' not in os.listdir('static'):
-            os.mkdir(os.path.join('static', 'users'))
         try:
-            # Make dir for the user
-            os.mkdir(os.path.join('static', 'users', username))
+            user_db_handler = DatabaseHandler()
+            user_db_handler.create_user_database("database", username)
+            user_db_handler.add_user_info(username, first, last, gender, dob)
+            username_db_map[username] = user_db_handler
+            # Make the dir to store the images
+            if 'images' not in os.listdir('static'):
+                os.mkdir(os.path.join('static', 'images'))
             ret_dict['created'] = True
         except FileExistsError:
             ret_dict['created'] = False
@@ -55,7 +54,7 @@ def upload_clothing():
             filename = os.path.basename(request.files['photo'].filename)
             username, clothes_type = request.form['username'], request.form['clothes_type']
             ret_dict['username'], ret_dict['filename'] = username, filename
-            save_path = os.path.join('static', 'users', username, filename)
+            save_path = os.path.join('static', 'images', f"{username}_{filename}")
             image = request.files['photo']
             image.save(save_path)
             image_url = base_url + save_path
@@ -67,6 +66,18 @@ def upload_clothing():
             ret_dict['exception'] = "FileNotFound"
     return ret_dict
 
+
+@app.route('/get_recommendation', methods=["POST"])
+def get_recommendation():
+    base_url = request.base_url.replace("get_recommendation", "")
+    ret_dict = {"rec_name": None, "rec_url": None}
+    username = request.form['username']
+    not_user_items = [c for c in os.listdir(os.path.join('static', 'images')) if not c.startswith(username)]
+    rec_name = random.choice(not_user_items)
+    ret_dict['rec_name'] = rec_name
+    image_url = os.path.join("static", "images", rec_name)
+    ret_dict['rec_url'] = base_url + image_url
+    return ret_dict
 
 if __name__ == '__main__':
     app.run()

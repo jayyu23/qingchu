@@ -6,8 +6,8 @@ import random
 Module simulates a Client
 """
 
-root_url = "http://qingchu.pythonanywhere.com/"
-local_root = "http://127.0.0.1:5000/"
+root_url_online = "http://qingchu.pythonanywhere.com/"
+root_url = "http://127.0.0.1:5000/"
 
 def upload_clothing(photo_path=None, username=""):
     clothes_types = ['shirt', 'pants', 'dress', 'shoes']
@@ -24,6 +24,12 @@ def add_user(user_data):
     r = requests.post(url, data=user_data)
     print(r.json())
 
+
+def get_recommendation(username):
+    # Get a recommendation for a given user
+    url = root_url + "get_recommendation"
+    r = requests.post(url, data={"username": username})
+    print(r.json())
 
 if __name__ == "__main__":
     users = [{"username": "jeff3ries", "first": "Jeff", "last": "Huang", "gender": "M", "dob": "1997-08-01"},
@@ -45,3 +51,7 @@ if __name__ == "__main__":
                 continue
             path = os.path.join(u_folder, im)
             upload_clothing(photo_path=path, username=name)
+
+    # Output the recommendations
+    for i in users:
+        get_recommendation(i['username'])
