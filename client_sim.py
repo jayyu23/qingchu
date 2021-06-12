@@ -11,8 +11,11 @@ root_url = "http://127.0.0.1:5000/"
 
 def upload_clothing(photo_path=None, username=""):
     clothes_types = ['shirt', 'pants', 'dress', 'shoes']
+    alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    clothes_name = "".join([random.choice(alphabet) for c in range(8)])
+    print(clothes_name)
     files = {'photo': open(photo_path, 'rb')}
-    values = {'username': username, 'clothes_type': random.choice(clothes_types)}
+    values = {'username': username, 'clothes_type': random.choice(clothes_types), 'clothes_name': clothes_name}
     url = root_url + "upload_clothing"
     r = requests.post(url, data=values, files=files)
     print(r.json())
