@@ -14,11 +14,13 @@ def run_app():
     return 'Flask Server Started'
 
 
-@app.route('/add_user')
+@app.route('/add_user', methods=["POST"])
 def add_user():
     # http://127.0.0.1:5000/add_user?user_id=123456
-    data = request.args
     ret_dict = {'user_id': None, 'success': None}
+    if request.method == "POST":
+        pass
+    data = request.args
     if 'user_id' in data:
         user_id = data['user_id']
         ret_dict['user_id'] = user_id
