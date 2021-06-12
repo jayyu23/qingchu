@@ -1,5 +1,6 @@
 from flask import Flask, request
 import os
+import poster
 
 app = Flask(__name__)
 
@@ -28,8 +29,18 @@ def add_user():
 
 @app.route('/upload_photo', methods=["POST"])
 def upload_photo():
+    ret_dict = {"filename": None, "success": None}
     if request.method == "POST":
-        pass
+        if request.files['photo'].filename:
+            try:
+                filename = request.files['photo'].filename
+                photo = request.files['photo']
+                photo.save(os.path.join('users', 'jayyu2310', filename))
+                ret_dict['filename'] = filename
+                ret_dict['success'] = True
+            except Exception:
+                ret_dict['success'] = False
+    return ret_dict
 
 
 if __name__ == '__main__':
