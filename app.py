@@ -60,8 +60,9 @@ def upload_clothing():
             filename = os.path.basename(request.files['photo'].filename)
             clothes_name = request.form['clothes_name']
             username, clothes_type = request.form['username'], request.form['clothes_type']
-            ret_dict['username'], ret_dict['filename'] = username, filename
+            ret_dict['username'] = username
             save_path = os.path.join('static', 'images', f"{username}_{clothes_name}.png")
+            ret_dict['filename'] = f"{username}_{clothes_name}.png"
             image = request.files['photo']
             image.save(save_path)
             image_url = base_url + save_path

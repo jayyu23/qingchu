@@ -7,7 +7,9 @@ Module simulates a Client
 """
 
 root_url_online = "http://qingchu.pythonanywhere.com/"
-root_url = "http://127.0.0.1:5000/"
+root_url_local = "http://127.0.0.1:5000/"
+root_url = root_url_online
+
 
 def upload_clothing(photo_path=None, username=""):
     clothes_types = ['shirt', 'pants', 'dress', 'shoes']

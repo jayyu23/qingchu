@@ -61,7 +61,7 @@ class DatabaseHandler:
         # Add information into the master database
         master_connection = sqlite3.connect(master_db_path)
         master_cursor = master_connection.cursor()
-        master_data = master_cursor.execute(f"SELECT 'Username' FROM 'USERINFO'").fetchall()
+        master_data = master_cursor.execute(f"SELECT Username FROM 'USERINFO' WHERE Username='{username}'").fetchall()
         if not master_data:
             update_master_sql = f"INSERT INTO USERINFO VALUES ('{username}', '{first}','{last}','{gender}','{dob}')"
             master_cursor.execute(update_master_sql)
