@@ -31,11 +31,21 @@ class DatabaseHandler:
         connection.commit()
         connection.close()
 
-    def update_user_info(self, username, first, last, gender, dob):
-        cursor = sqlite3.connect(self.db_path).cursor()
-        cursor.execute(f"""UPDATE USERINFO SET Username = '{username}',
-                                               Firstname = '{first}',
-                                               Lastname = '{last}',
-                                               Gender = '{gender}',
-                                               DOB = '{dob}'""")
+    def add_user_info(self, username, first, last, gender, dob):
+        connection = sqlite3.connect(self.db_path)
+        cursor = connection.cursor()
+        data = cursor.execute(f"SELECT 'Username' FROM 'USERINFO'").fetchall()
+        if not data:
+            update_userinfo_sql = f"INSERT INTO USERINFO VALUES ('{username}', '{first}','{last}','{gender}','{dob}')"
+            cursor.execute(update_userinfo_sql)
+        connection.commit()
+        connection.close()
 
+    def add_user_clothes(self, clothes_type, image_url, remarks=""):
+        connection = sqlite3.connect(self.db_path)
+        cursor = connection.cursor()
+        update_clothes_sql = f"INSERT INTO CLOTHES ('ClothesType', 'URL', 'Remarks') " \
+                             f"VALUES ('{clothes_type}','{image_url}','{remarks}')"
+        cursor.execute(update_clothes_sql)
+        connection.commit()
+        connection.close()

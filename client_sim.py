@@ -1,37 +1,44 @@
-from flask import request
 import requests
 import os
+import random
+
 """
 Module simulates a Client
 """
 
 
-def upload_photo(photo_path=None, username=None):
-    photo_path = photo_path if photo_path else '002/app005prod-1.png'
-    username = username if username else "jayyu2310"
-    url = "http://127.0.0.1:5000/upload_photo"
-    data = {'user': username}
-    files = [('photo', (photo_path, open(photo_path, 'rb'), 'image/png'))]
-    r = requests.post(url, data=data, files=files)
+def upload_clothing(photo_path=None, username=""):
+    clothes_types = ['shirt', 'pants', 'dress', 'shoes']
+    files = {'photo': open(photo_path, 'rb')}
+    values = {'username': username, 'clothes_type': random.choice(clothes_types)}
+    url = "http://127.0.0.1:5000/upload_clothing"
+    r = requests.post(url, data=values, files=files)
     print(r.json())
 
 
-def add_user(user_name):
-    data = {"username": "archronac", "first": "Jay", "last": "Yu", "gender": "M", "dob": "1999-12-31"}
+def add_user(user_data):
     url = "http://127.0.0.1:5000/add_user"
-    r = requests.post(url, data=data)
+    r = requests.post(url, data=user_data)
     print(r.json())
 
 
 if __name__ == "__main__":
-    user_data_map = {"jeff3ries": "001",
+    users = [{"username": "jeff3ries", "first": "Jeff", "last": "Huang", "gender": "M", "dob": "1997-08-01"},
+             {"username": "jillsmith67", "first": "Jill", "last": "Smith", "gender": "F", "dob": "2003-10-31"},
+             {"username": "velvetrose", "first": "Val", "last": "Flemings", "gender": "F", "dob": "1996-05-05"},
+             {"username": "sandy.young", "first": "Sandy", "last": "Young", "gender": "F", "dob": "1988-12-18"},
+             {"username": "lachlanite564", "first": "Lachlan", "last": "McGee", "gender": "M", "dob": "1994-12-31"},]
+    user_photos_map = {"jeff3ries": "001",
                      "jillsmith67": "002",
                      "velvetrose": "003",
                      "sandy.young": "004",
                      "lachlanite564": "005"}
-    for user, folder in user_data_map.items():
-        add_user(user)
-        user_fol = os.path.join('input_test', folder)
-        for im in os.listdir(user_fol):
-            path = os.path.join(user_fol, im)
-            upload_photo(photo_path=path, username=user)
+    for u in users:
+        name = u['username']
+        u_folder = os.path.join('input_test', user_photos_map[name])
+        add_user(u)
+        for im in os.listdir(u_folder):
+            if im[0] == ".":
+                continue
+            path = os.path.join(u_folder, im)
+            upload_clothing(photo_path=path, username=name)
