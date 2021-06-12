@@ -11,11 +11,9 @@ app = Flask(__name__)
 # Maps each username with its corresponding db_handler obj
 username_db_map = {}
 
-
 @app.route('/')
 def run_app():
-    BASE_URL = request.base_url
-    return 'Flask Server Started'
+    return '轻橱后端 Flask 服务器加载成功'
 
 
 @app.route('/add_user', methods=["POST"])
@@ -23,6 +21,11 @@ def add_user():
     ret_dict = {'username': None, 'created': None}
     if request.method == "POST":
         # Create the databases
+        # Check if we have the database and static folders
+        if "database" not in os.listdir(os.getcwd()):
+            os.mkdir('database')
+        if "static" not in os.listdir(os.getcwd()):
+            os.mkdir('static')
         data = request.form
         username, first, last = data["username"], data["first"], data["last"]
         gender, dob = data["gender"], data["dob"]

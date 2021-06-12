@@ -6,18 +6,21 @@ import random
 Module simulates a Client
 """
 
+root_url = "http://qingchu.pythonanywhere.com/"
+local_root = "http://127.0.0.1:5000/"
 
 def upload_clothing(photo_path=None, username=""):
     clothes_types = ['shirt', 'pants', 'dress', 'shoes']
     files = {'photo': open(photo_path, 'rb')}
     values = {'username': username, 'clothes_type': random.choice(clothes_types)}
-    url = "http://127.0.0.1:5000/upload_clothing"
+    url = root_url + "upload_clothing"
     r = requests.post(url, data=values, files=files)
     print(r.json())
 
 
 def add_user(user_data):
-    url = "http://127.0.0.1:5000/add_user"
+    url = root_url + "add_user"
+    print(url)
     r = requests.post(url, data=user_data)
     print(r.json())
 
