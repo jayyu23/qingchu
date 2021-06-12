@@ -11,6 +11,7 @@ def run_app():
 
 @app.route('/add_user')
 def add_user():
+    # http://127.0.0.1:5000/add_user?user_id=123456
     data = request.args
     ret_dict = {'user_id': None, 'success': None}
     if 'user_id' in data:
