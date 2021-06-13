@@ -1,5 +1,5 @@
 from flask import Flask, request
-from database_handler import DatabaseHandler, master_db_path, create_master_db
+from database_handler import *
 import os, random
 
 """
@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 # Maps each username with its corresponding db_handler obj
 username_db_map = {}
-
+random.seed(1)
 
 @app.route('/')
 def run_app():
@@ -80,13 +80,20 @@ def get_recommendation():
     base_url = request.base_url.replace("get_recommendation", "")
     ret_dict = {"username": None, "rec_name": None, "rec_url": None}
     username = request.form['username']
+    user_gender = execute_master_sql(f"SELECT Gender FROM USERINFO WHERE Username = '{username}'")[0][0]
+    print(user_gender)
+    all_users_genders = execute_master_sql(f"SELECT Username, Gender FROM USERINFO")
+    same_gender_users = [u for u, g in all_users_genders if g == user_gender]
     not_user_items = [c for c in os.listdir(os.path.join('static', 'images')) if not c.startswith(username)]
-    rec_name = random.choice(not_user_items)
+    selectables = [c for c in not_user_items if c.split('_')[0] in same_gender_users]
+    print(len(selectables), selectables)
+    rec_name = random.choice(selectables)
     ret_dict['rec_name'] = rec_name
     ret_dict['username'] = username
     image_url = os.path.join("static", "images", rec_name)
     ret_dict['rec_url'] = base_url + image_url
     return ret_dict
+
 
 if __name__ == '__main__':
     app.run()

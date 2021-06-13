@@ -8,7 +8,7 @@ Module simulates a Client
 
 root_url_online = "http://qingchu.pythonanywhere.com/"
 root_url_local = "http://127.0.0.1:5000/"
-root_url = root_url_online
+root_url = root_url_local
 
 
 def upload_clothing(photo_path=None, username=""):
@@ -47,6 +47,7 @@ if __name__ == "__main__":
                      "velvetrose": "003",
                      "sandy.young": "004",
                      "lachlanite564": "005"}
+
     for u in users:
         name = u['username']
         u_folder = os.path.join('input_test', user_photos_map[name])

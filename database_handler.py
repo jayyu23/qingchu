@@ -20,6 +20,15 @@ def create_master_db():
     connection.close()
 
 
+def execute_master_sql(sql_string):
+    connection = sqlite3.connect(master_db_path)
+    cursor = connection.cursor()
+    results = tuple(cursor.execute(sql_string).fetchall())
+    connection.commit()
+    connection.close()
+    return results
+
+
 class DatabaseHandler:
     def __init__(self):
         self.db_path = ""
@@ -76,3 +85,5 @@ class DatabaseHandler:
         cursor.execute(update_clothes_sql)
         connection.commit()
         connection.close()
+
+
