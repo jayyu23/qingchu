@@ -86,4 +86,13 @@ class DatabaseHandler:
         connection.commit()
         connection.close()
 
+    def get_all_images(self):
+        connection = sqlite3.connect(self.db_path)
+        cursor = connection.cursor()
+        results = tuple(cursor.execute("SELECT ClothesName, ClothesType, URL FROM CLOTHES").fetchall())
+        connection.commit()
+        connection.close()
+        return results
+
+
 

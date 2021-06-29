@@ -36,6 +36,13 @@ def get_recommendation(username):
     r = requests.post(url, data={"username": username})
     print(r.json())
 
+
+def get_images(username):
+    url = root_url + f"get_user_images?username={username}"
+    r = requests.get(url)
+    print(r.json())
+
+
 if __name__ == "__main__":
     users = [{"username": "jeff3ries", "first": "Jeff", "last": "Huang", "gender": "M", "dob": "1997-08-01"},
              {"username": "jillsmith67", "first": "Jill", "last": "Smith", "gender": "F", "dob": "2003-10-31"},
@@ -61,3 +68,5 @@ if __name__ == "__main__":
     # Output the recommendations
     for i in users:
         get_recommendation(i['username'])
+
+    get_images("jeff3ries")

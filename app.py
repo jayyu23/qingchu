@@ -1,6 +1,10 @@
+from PIL import Image
 from flask import Flask, request
 from database_handler import *
+from resnet_inference import InferenceModel
 import os, random
+import requests
+import io
 
 """
 Flask Server Code
@@ -11,6 +15,7 @@ app = Flask(__name__)
 # Maps each username with its corresponding db_handler obj
 username_db_map = {}
 random.seed(1)
+inference_model = InferenceModel("resnet18_transfer_full1624808047582392000.pth")
 
 @app.route('/')
 def run_app():
@@ -59,17 +64,20 @@ def upload_clothing():
         try:
             filename = os.path.basename(request.files['photo'].filename)
             clothes_name = request.form['clothes_name']
-            username, clothes_type = request.form['username'], request.form['clothes_type']
+            username = request.form['username']
             ret_dict['username'] = username
             save_path = os.path.join('static', 'images', f"{username}_{clothes_name}.png")
             ret_dict['filename'] = f"{username}_{clothes_name}.png"
             image = request.files['photo']
             image.save(save_path)
             image_url = base_url + save_path
+            # Run inference on clothes type
+            clothes_type = inference_model.test_single_image(image_url)
             username_db_map[username].add_user_clothes(clothes_name, clothes_type, image_url)
             ret_dict['success'] = True
             ret_dict['url'] = image_url
-        except FileNotFoundError:
+            ret_dict['clothes_type'] = clothes_type
+        except ImportError:
             ret_dict['success'] = False
             ret_dict['exception'] = "FileNotFound"
     return ret_dict
@@ -92,6 +100,17 @@ def get_recommendation():
     ret_dict['username'] = username
     image_url = os.path.join("static", "images", rec_name)
     ret_dict['rec_url'] = base_url + image_url
+    return ret_dict
+
+
+@app.route('/get_user_images', methods=["GET"])
+def get_user_images():
+    ret_dict = dict()
+    username = request.args['username']
+    user_db = username_db_map[username]
+    results_tuple = user_db.get_all_images()
+    for name, c_type, url in results_tuple:
+        ret_dict[name] = {'clothes_type': c_type, 'url': url}
     return ret_dict
 
 
